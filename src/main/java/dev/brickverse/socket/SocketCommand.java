@@ -22,11 +22,10 @@ public class SocketCommand {
                 Socket socket = serverSocket.accept();
                 System.out.println("Client connected: " + socket);
 
-                String message = getMessage(socket);
-                System.out.println("Received message from client: " + message);
-
-                socket.close();
-                System.out.println("Client disconnected: " + socket);
+                while (!socket.isClosed()) {
+                    String message = getMessage(socket);
+                    System.out.println("Received message from client: " + message);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

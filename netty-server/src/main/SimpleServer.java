@@ -8,15 +8,20 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.annotation.Order;
 
-public class SimpleServer {
-    private final int port;
-
-    public SimpleServer(int port) {
-        this.port = port;
+@SpringBootApplication
+@Order(1)
+public class SimpleServer implements CommandLineRunner {
+    public static void main(String[] args) {
+        SpringApplication.run(SimpleServer.class, args);
     }
 
-    public void run() throws InterruptedException {
+    @Override
+    public void run(String... args) throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -32,16 +37,11 @@ public class SimpleServer {
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            ChannelFuture f = b.bind(port).sync();
+            ChannelFuture f = b.bind(8888).sync();
             f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        int port = 8888; // 替换成你想要监听的端口号
-        new SimpleServer(port).run();
     }
 }
